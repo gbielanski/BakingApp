@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.bielanski.bakingapp.data.Recipe;
 
-@Database(entities = {Recipe.class}, version = 1, exportSchema = false)
+@Database(entities = {Recipe.class}, version = 2)
 @TypeConverters(Converters.class)
 public abstract class RecipesDatabase extends RoomDatabase {
     private static final String LOG_TAG = RecipesDatabase.class.getSimpleName();
@@ -23,7 +23,7 @@ public abstract class RecipesDatabase extends RoomDatabase {
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
-                        RecipesDatabase.class, RecipesDatabase.DATABASE_NAME).build();
+                        RecipesDatabase.class, RecipesDatabase.DATABASE_NAME).fallbackToDestructiveMigration().build();
                 Log.d(LOG_TAG, "Made new database");
             }
         }

@@ -10,6 +10,7 @@ import android.util.Log;
 import com.bielanski.bakingapp.R;
 import com.bielanski.bakingapp.RecipesAdapter;
 import com.bielanski.bakingapp.data.Recipe;
+import com.bielanski.bakingapp.data.Step;
 import com.bielanski.bakingapp.data.database.RecipeDao;
 import com.bielanski.bakingapp.data.database.RecipesDatabase;
 import com.bielanski.bakingapp.network.RequestInterface;
@@ -60,14 +61,31 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
                     data = new ArrayList<>(jsonResponse);
                     Thread t = new Thread() {
                         public void run() {
-                                RecipesDatabase database = RecipesDatabase.getInstance(MainActivity.this);
-                                RecipeDao recipeDao = database.recipeDao();
-                                recipeDao.bulkInsert((Recipe[]) data.toArray(new Recipe[data.size()]));
+                            RecipesDatabase database = RecipesDatabase.getInstance(MainActivity.this);
+                            RecipeDao recipeDao = database.recipeDao();
+                            Recipe[] recipes = data.toArray(new Recipe[data.size()]);
+                            recipeDao.bulkInsert(recipes);
+
+//                            List<Recipe> allRecipes = recipeDao.getAllRecipes();
+//
+//                            for (Recipe d : allRecipes) {
+//                                Log.d(TAG, "Steps for " + d.getName());
+//                                ArrayList<Step> steps = d.getSteps();
+//                                if (steps == null)
+//                                    Log.d(TAG, "Steps is null");
+//                                else {
+//                                    Log.d(TAG, "Steps size " + steps.size());
+//                                    for (Step s : steps) {
+//                                        Log.d(TAG, "Steps " + s.getShortDescription());
+//                                    }
+//                                }
+//                            }
                         }
                     };
 
                     t.start();
                     adapter.addRecipeData(data);
+
                 }
             }
 

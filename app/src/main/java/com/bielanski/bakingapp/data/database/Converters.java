@@ -9,11 +9,11 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class Converters {
     @TypeConverter
-    public static ArrayList<Ingredients> stringToIngredients(String json) {
+    public static ArrayList<Ingredients> toIngredientsList(String json) {
         Gson gson = new Gson();
         Type type = new TypeToken<ArrayList<Ingredients>>() {}.getType();
         ArrayList<Ingredients> ingredients = gson.fromJson(json, type);
@@ -21,7 +21,7 @@ public class Converters {
     }
 
     @TypeConverter
-    public static String ingredientsToString(ArrayList<Ingredients> list) {
+    public static String fromIngredientsList(ArrayList<Ingredients> list) {
         Gson gson = new Gson();
         Type type = new TypeToken<ArrayList<Ingredients>>() {}.getType();
         String json = gson.toJson(list, type);
@@ -29,15 +29,15 @@ public class Converters {
     }
 
     @TypeConverter
-    public static List<Step> stringToStep(String json) {
+    public static ArrayList<Step> toStepList(String json) {
         Gson gson = new Gson();
         Type type = new TypeToken<ArrayList<Step>>() {}.getType();
-        List<Step> steps = gson.fromJson(json, type);
+        ArrayList<Step> steps = gson.fromJson(json, type);
         return steps;
     }
 
     @TypeConverter
-    public static String stepToString(ArrayList<Step> list) {
+    public static String fromStepList(ArrayList<Step> list) {
         Gson gson = new Gson();
         Type type = new TypeToken<ArrayList<Step>>() {}.getType();
         String json = gson.toJson(list, type);

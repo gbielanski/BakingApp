@@ -10,6 +10,8 @@ import android.util.Log;
 import com.bielanski.bakingapp.R;
 import com.bielanski.bakingapp.RecipesAdapter;
 import com.bielanski.bakingapp.data.Recipe;
+import com.bielanski.bakingapp.data.database.RecipeDao;
+import com.bielanski.bakingapp.data.database.RecipesDatabase;
 import com.bielanski.bakingapp.network.RequestInterface;
 
 import java.util.ArrayList;
@@ -54,9 +56,18 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
                 List<Recipe> jsonResponse = response.body();
                 if (jsonResponse != null) {
-                    data = new ArrayList<>(jsonResponse);
-                    adapter.addRecipeData(data);
 
+                    data = new ArrayList<>(jsonResponse);
+                    Thread t = new Thread() {
+                        public void run() {
+                                RecipesDatabase database = RecipesDatabase.getInstance(MainActivity.this);
+                                RecipeDao recipeDao = database.recipeDao();
+                                recipeDao.bulkInsert((Recipe[]) data.toArray(new Recipe[data.size()]));
+                        }
+                    };
+
+                    t.start();
+                    adapter.addRecipeData(data);
                 }
             }
 

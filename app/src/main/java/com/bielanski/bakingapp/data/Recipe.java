@@ -1,18 +1,22 @@
 package com.bielanski.bakingapp.data;
 
 import android.arch.persistence.room.Embedded;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity(tableName = "recipes", indices = {@Index(value = {"id"})})
 public class Recipe {
     @PrimaryKey
     private int id;
     private String name;
     @Embedded
-    private List <Ingredients> ingredients;
+    private ArrayList<Ingredients> ingredients;
     @Embedded
-    private List <Step> steps;
+    private ArrayList <Step> steps;
     private int servings;
     private String image;
 
@@ -32,19 +36,19 @@ public class Recipe {
         this.name = name;
     }
 
-    public List<Ingredients> getIngredients() {
+    public ArrayList<Ingredients> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(List<Ingredients> ingredients) {
+    public void setIngredients(ArrayList<Ingredients> ingredients) {
         this.ingredients = ingredients;
     }
 
-    public List<Step> getSteps() {
+    public ArrayList<Step> getSteps() {
         return steps;
     }
 
-    public void setSteps(List<Step> steps) {
+    public void setSteps(ArrayList<Step> steps) {
         this.steps = steps;
     }
 

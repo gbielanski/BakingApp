@@ -65,21 +65,6 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
                             RecipeDao recipeDao = database.recipeDao();
                             Recipe[] recipes = data.toArray(new Recipe[data.size()]);
                             recipeDao.bulkInsert(recipes);
-
-//                            List<Recipe> allRecipes = recipeDao.getAllRecipes();
-//
-//                            for (Recipe d : allRecipes) {
-//                                Log.d(TAG, "Steps for " + d.getName());
-//                                ArrayList<Step> steps = d.getSteps();
-//                                if (steps == null)
-//                                    Log.d(TAG, "Steps is null");
-//                                else {
-//                                    Log.d(TAG, "Steps size " + steps.size());
-//                                    for (Step s : steps) {
-//                                        Log.d(TAG, "Steps " + s.getShortDescription());
-//                                    }
-//                                }
-//                            }
                         }
                     };
 

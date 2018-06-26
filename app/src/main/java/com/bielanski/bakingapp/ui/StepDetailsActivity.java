@@ -1,5 +1,6 @@
 package com.bielanski.bakingapp.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.bielanski.bakingapp.R;
+import com.bielanski.bakingapp.RecipeAsyncTaskLoader;
 import com.bielanski.bakingapp.data.Recipe;
 import com.bielanski.bakingapp.data.database.RecipeDao;
 import com.bielanski.bakingapp.data.database.RecipesDatabase;
@@ -46,23 +48,13 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
     @NonNull
     @Override
     public Loader<List<Recipe>> onCreateLoader(int id, @Nullable Bundle args) {
-        //return new StepsAsyncLoader (this, args.getInt("RECIPE_ID"));
-        return new AsyncTaskLoader<List<Recipe>>(this) {
-            @Override
-            public List<Recipe> loadInBackground() {
-                RecipesDatabase database = RecipesDatabase.getInstance(StepDetailsActivity.this);
-                RecipeDao recipeDao = database.recipeDao();
-                List<Recipe> recipes = recipeDao.getAllRecipes();
-                return recipes;
-            }
+        RecipeAsyncTaskLoader recipeAsyncTaskLoader = new RecipeAsyncTaskLoader(this);
+        RecipesDatabase database = RecipesDatabase.getInstance(StepDetailsActivity.this);
+        recipeAsyncTaskLoader.setDatabase(database);
+        return recipeAsyncTaskLoader;
 
-            @Override
-            protected void onStartLoading() {
-                //Think of this as AsyncTask onPreExecute() method,you can start your progress bar,and at the end call forceLoad();
-                forceLoad();
-            }
-        };
     }
+
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<Recipe>> loader, List<Recipe> listOfRecipes) {

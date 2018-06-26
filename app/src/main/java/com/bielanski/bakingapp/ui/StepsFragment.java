@@ -20,30 +20,15 @@ import com.bielanski.bakingapp.R;
 import com.bielanski.bakingapp.StepsAdapter;
 import com.bielanski.bakingapp.data.Recipe;
 import com.bielanski.bakingapp.data.Step;
-import com.bielanski.bakingapp.data.database.RecipeDao;
-import com.bielanski.bakingapp.data.database.RecipesDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.bielanski.bakingapp.ui.MainActivity.RECIPE_ID;
-
-public class StepsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Recipe>, StepsAdapter.OnClickStepHandler{
+public class StepsFragment extends Fragment {
     private static final String TAG = "StepsFragment";
-    public static final int LOADER_ID = 123;
-    private int mIdExtra;
-    private StepsAdapter mStepsAdapter;
-    private RecyclerView recyclerView;
+    private List<Recipe> mRecipes;
+    private int mRecipeNumber;
 
     public StepsFragment() {
-    }
-
-    public void setIdExtra(int idExtra){
-        mIdExtra = idExtra;
-        Bundle bundle = new Bundle();
-        bundle.putInt(RECIPE_ID, idExtra);
-        getActivity().getSupportLoaderManager().initLoader(LOADER_ID, bundle, this);
-
     }
 
     @Nullable
@@ -51,70 +36,33 @@ public class StepsFragment extends Fragment implements LoaderManager.LoaderCallb
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_steps, container, false);
 
-        recyclerView = rootView.findViewById(R.id.steps_recycler_view);
+        RecyclerView recyclerView = rootView.findViewById(R.id.steps_recycler_view);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
-        mStepsAdapter = new StepsAdapter( new ArrayList<Step>(), this);
+
+        ArrayList<Step> steps = new ArrayList<>();
+        for(Recipe r : mRecipes){
+            if(r.getId() == mRecipeNumber){
+                steps = r.getSteps();
+            }
+        }
+        StepsAdapter mStepsAdapter = new StepsAdapter(steps, (StepsAdapter.OnClickStepHandler) getActivity());
         recyclerView.setAdapter(mStepsAdapter);
 
         return rootView;
     }
 
     @Override
-    public void stepOnClick(int position) {
-
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.v(TAG, "OnCreate " + mIdExtra);
         super.onCreate(savedInstanceState);
     }
 
-    static class StepsAsyncLoader extends AsyncTaskLoader<Recipe> {
-        @SuppressLint("StaticFieldLeak")
-        static Context mContext;
-        static int mRecipeId;
-
-        public StepsAsyncLoader(@NonNull Context context, int recipeId) {
-            super(context);
-            mContext = context;
-            mRecipeId = recipeId;
-        }
-
-        @Override
-        public Recipe loadInBackground() {
-            RecipesDatabase database = RecipesDatabase.getInstance(mContext);
-            RecipeDao recipeDao = database.recipeDao();
-            List<Recipe> recipes = recipeDao.getRecipesWithId(mRecipeId);
-            return recipes.get(0);
-        }
-
-        @Override
-        protected void onStartLoading() {
-            //Think of this as AsyncTask onPreExecute() method,you can start your progress bar,and at the end call forceLoad();
-            forceLoad();
-        }
-    };
-
-    @NonNull
-    @Override
-    public Loader<Recipe> onCreateLoader(int id, @Nullable Bundle args) {
-        return new StepsAsyncLoader (getActivity(), args.getInt("RECIPE_ID"));
+    public void setRecipes(List<Recipe> recipes) {
+        this.mRecipes = recipes;
     }
 
-    @Override
-    public void onLoadFinished(@NonNull Loader<Recipe> loader, Recipe data) {
-
-        Log.v(TAG, "onLoadFinished " + data);
-        mStepsAdapter.addStepsData(data.getSteps());
-
-
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<Recipe> loader) {
-
+    public void setRecipeNumber(int recipeNumber) {
+        this.mRecipeNumber = recipeNumber;
     }
 }

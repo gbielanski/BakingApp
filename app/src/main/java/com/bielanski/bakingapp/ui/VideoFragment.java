@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bielanski.bakingapp.R;
+import com.bielanski.bakingapp.data.Recipe;
+import com.bielanski.bakingapp.data.Step;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -24,9 +26,14 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.util.List;
+
 public class VideoFragment extends Fragment {
     private SimpleExoPlayer mExoPlayer;
     private SimpleExoPlayerView mPlayerView;
+    private List<Recipe> recipes;
+    private int recipeNumber;
+    private int stepNumber;
 
     public VideoFragment() {
     }
@@ -47,7 +54,15 @@ public class VideoFragment extends Fragment {
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector, loadControl);
             mPlayerView.setPlayer(mExoPlayer);
-            MediaSource mediaSource = new ExtractorMediaSource(Uri.parse("https://d17h27t6h515a5.cloudfront.net/topher/2017/April/58ffdc9e_4-sift-flower-add-coco-powder-salt-brownies/4-sift-flower-add-coco-powder-salt-brownies.mp4"),
+
+            String videoURL = null;
+            for (Recipe r : recipes){
+                if(r.getId() == recipeNumber) {
+                    Step step = r.getSteps().get(stepNumber);
+                    videoURL = step.getVideoURL();
+                }
+            }
+            MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(videoURL),
                     new DefaultDataSourceFactory(getActivity(), Util.getUserAgent(getActivity(), "BakingApp")),
                     new DefaultExtractorsFactory(),
                     null,
@@ -58,7 +73,7 @@ public class VideoFragment extends Fragment {
         }
     }
 
-    private void releasePleayer(){
+    private void releasePlayer(){
         mExoPlayer.stop();
         mExoPlayer.release();
         mExoPlayer = null;
@@ -66,7 +81,19 @@ public class VideoFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        releasePleayer();
+        releasePlayer();
         super.onDestroyView();
+    }
+
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
+    }
+
+    public void setRecipeNumber(int recipeNumber) {
+        this.recipeNumber = recipeNumber;
+    }
+
+    public void setStepNumber(int stepNumber) {
+        this.stepNumber = stepNumber;
     }
 }

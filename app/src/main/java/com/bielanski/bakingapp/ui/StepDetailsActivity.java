@@ -11,6 +11,8 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.bielanski.bakingapp.R;
 import com.bielanski.bakingapp.RecipeAsyncTaskLoader;
@@ -28,6 +30,7 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
     private int mRecipeId;
     private int mStepId;
     public static final int STEP_DETAILS_LOADER_ID = 234;
+    private List<Recipe> mListOfRecipes;
 
 
     @Override
@@ -42,6 +45,7 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
 
             getSupportLoaderManager().initLoader(STEP_DETAILS_LOADER_ID, null, this);
         }
+
 
     }
 
@@ -58,12 +62,38 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<Recipe>> loader, List<Recipe> listOfRecipes) {
+        mListOfRecipes = listOfRecipes;
+        replaceFragments();
+        Button buttonNext = findViewById(R.id.detail_next);
+        buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO Manage this
+                mStepId++;
+                replaceFragments();
+
+            }
+        });
+
+        Button buttonPrevious = findViewById(R.id.detail_previous);
+        buttonPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO Manage this
+                mStepId--;
+                replaceFragments();
+            }
+        });
+
+    }
+
+    public void replaceFragments() {
         InstructionsFragment instructionsFragment = new InstructionsFragment();
         VideoFragment videoFragment = new VideoFragment();
-        instructionsFragment.setRecipes(listOfRecipes);
+        instructionsFragment.setRecipes(mListOfRecipes);
         instructionsFragment.setRecipeNumber(mRecipeId);
         instructionsFragment.setStepNumber(mStepId);
-        videoFragment.setRecipes(listOfRecipes);
+        videoFragment.setRecipes(mListOfRecipes);
         videoFragment.setRecipeNumber(mRecipeId);
         videoFragment.setStepNumber(mStepId);
         FragmentManager fragmentManager = getSupportFragmentManager();

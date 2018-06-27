@@ -49,31 +49,34 @@ public class VideoFragment extends Fragment {
     }
 
     private void initializePlayer() {
-        if(mExoPlayer == null){
+        if (mExoPlayer == null) {
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector, loadControl);
             mPlayerView.setPlayer(mExoPlayer);
 
             String videoURL = null;
-            for (Recipe r : recipes){
-                if(r.getId() == recipeNumber) {
+            for (Recipe r : recipes) {
+                if (r.getId() == recipeNumber) {
                     Step step = r.getSteps().get(stepNumber);
                     videoURL = step.getVideoURL();
                 }
             }
-            MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(videoURL),
-                    new DefaultDataSourceFactory(getActivity(), Util.getUserAgent(getActivity(), "BakingApp")),
-                    new DefaultExtractorsFactory(),
-                    null,
-                    null);
 
-            mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
+            if (videoURL != null) {
+                MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(videoURL),
+                        new DefaultDataSourceFactory(getActivity(), Util.getUserAgent(getActivity(), "BakingApp")),
+                        new DefaultExtractorsFactory(),
+                        null,
+                        null);
+
+                mExoPlayer.prepare(mediaSource);
+                mExoPlayer.setPlayWhenReady(true);
+            }
         }
     }
 
-    private void releasePlayer(){
+    private void releasePlayer() {
         mExoPlayer.stop();
         mExoPlayer.release();
         mExoPlayer = null;

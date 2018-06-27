@@ -26,9 +26,13 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VideoFragment extends Fragment {
+    public static final String RECIPES_KEY = "RECIPES_KEY";
+    public static final String RECIPE_NUM_KEY = "RECIPE_NUM_KEY";
+    public static final String STEP_NUMBER_KEY = "STEP_NUMBER_KEY";
     private SimpleExoPlayer mExoPlayer;
     private SimpleExoPlayerView mPlayerView;
     private List<Recipe> recipes;
@@ -41,6 +45,7 @@ public class VideoFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_video, container, false);
         mPlayerView = rootView.findViewById(R.id.player_view);
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.gotowanie));
@@ -98,5 +103,13 @@ public class VideoFragment extends Fragment {
 
     public void setStepNumber(int stepNumber) {
         this.stepNumber = stepNumber;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        //outState.putInt(RECIPE_NUM_KEY, recipeNumber);
+        //outState.putInt(STEP_NUMBER_KEY, stepNumber);
+        //outState.putParcelableArrayList(RECIPES_KEY, new ArrayList<Recipe>(recipes));
+        super.onSaveInstanceState(outState);
     }
 }

@@ -27,10 +27,13 @@ import static com.bielanski.bakingapp.ui.MainActivity.TAG;
 import static com.bielanski.bakingapp.ui.StepsActivity.STEP_ID;
 
 public class StepDetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Recipe>> {
+    public static final String RECIPE_ID_KEY = "RECIPE_ID_KEY";
+    public static final String STEP_ID_KEY = "STEP_ID_KEY";
     private int mRecipeId;
     private int mStepId;
     public static final int STEP_DETAILS_LOADER_ID = 234;
     private List<Recipe> mListOfRecipes;
+    boolean mIsPhoneLandscapeMode = false;
 
 
     @Override
@@ -42,9 +45,18 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
             mRecipeId = intent.getIntExtra(RECIPE_ID, 0);
             mStepId = intent.getIntExtra(STEP_ID, 0);
             Log.v(TAG, "id " + mRecipeId);
-
-            getSupportLoaderManager().initLoader(STEP_DETAILS_LOADER_ID, null, this);
         }
+
+        if(savedInstanceState != null){
+            mRecipeId = savedInstanceState.getInt(RECIPE_ID_KEY);
+            mStepId = savedInstanceState.getInt(STEP_ID_KEY);
+
+        }
+
+        getSupportLoaderManager().initLoader(STEP_DETAILS_LOADER_ID, null, this);
+
+        if (findViewById(R.id.instructions_container) == null)
+            mIsPhoneLandscapeMode = true;
 
 
     }
@@ -64,6 +76,15 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
     public void onLoadFinished(@NonNull Loader<List<Recipe>> loader, List<Recipe> listOfRecipes) {
         mListOfRecipes = listOfRecipes;
         replaceFragments();
+        setUpButtons();
+
+    }
+
+    private void setUpButtons() {
+
+        if(mIsPhoneLandscapeMode)
+            return;
+
         Button buttonNext = findViewById(R.id.detail_next);
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,27 +105,44 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
                 replaceFragments();
             }
         });
-
     }
 
     public void replaceFragments() {
         InstructionsFragment instructionsFragment = new InstructionsFragment();
         VideoFragment videoFragment = new VideoFragment();
-        instructionsFragment.setRecipes(mListOfRecipes);
-        instructionsFragment.setRecipeNumber(mRecipeId);
-        instructionsFragment.setStepNumber(mStepId);
         videoFragment.setRecipes(mListOfRecipes);
         videoFragment.setRecipeNumber(mRecipeId);
         videoFragment.setStepNumber(mStepId);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.video_container, videoFragment)
-                .replace(R.id.instructions_container, instructionsFragment)
-                .commit();
+
+        if (mIsPhoneLandscapeMode) {
+            instructionsFragment.setRecipes(mListOfRecipes);
+            instructionsFragment.setRecipeNumber(mRecipeId);
+            instructionsFragment.setStepNumber(mStepId);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.video_container, videoFragment)
+                    .commit();
+        }else{
+            instructionsFragment.setRecipes(mListOfRecipes);
+            instructionsFragment.setRecipeNumber(mRecipeId);
+            instructionsFragment.setStepNumber(mStepId);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.video_container, videoFragment)
+                    .replace(R.id.instructions_container, instructionsFragment)
+                    .commit();
+        }
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<List<Recipe>> loader) {
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(RECIPE_ID_KEY, mRecipeId);
+        outState.putInt(STEP_ID_KEY, mStepId);
+        super.onSaveInstanceState(outState);
     }
 }

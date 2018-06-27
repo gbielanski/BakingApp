@@ -1,8 +1,10 @@
 package com.bielanski.bakingapp.ui;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,6 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements RecipesAdapter.OnClickRecipeHandler {
     public static final String TAG = "MainActivity";
+    public static final int TABLET_SMALLEST_WIDGHT = 600;
     private ArrayList<Recipe> data;
     private RecyclerView recyclerView;
     private RecipesAdapter adapter;
@@ -37,11 +40,27 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(layoutManager);
+        Log.d(TAG, "Lifecycle onCreate ");
+        Log.d(TAG, "MainActivity screenWidthDp " + getResources().getConfiguration().smallestScreenWidthDp);
+
+        if (getResources().getConfiguration().smallestScreenWidthDp >= TABLET_SMALLEST_WIDGHT &&
+                getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 3);
+            recyclerView.setLayoutManager(layoutManager);
+        }else{
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(layoutManager);
+
+        }
         adapter = new RecipesAdapter(new ArrayList<Recipe>(), this);
         recyclerView.setAdapter(adapter);
         loadJSON();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "Lifecycle onResume ");
+        super.onResume();
     }
 
     private void loadJSON() {

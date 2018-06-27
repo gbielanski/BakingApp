@@ -41,6 +41,7 @@ public class StepsFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
 
+
         ArrayList<Step> steps = new ArrayList<>();
         for(Recipe r : mRecipes){
             if(r.getId() == mRecipeNumber){

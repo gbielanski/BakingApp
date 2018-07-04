@@ -1,10 +1,12 @@
 package com.bielanski.bakingapp.ui;
 
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InstructionsFragment extends Fragment {
+    private static final String TAG = "InstructionsFragment";
     private final int INGREDIENCE = 0;
     private List<Recipe> recipes;
     private int recipeNumber;
@@ -33,12 +36,14 @@ public class InstructionsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_instructions, container, false);
         TextView instructionsTextView = rootView.findViewById(R.id.instructions_text_view);
         String stepDescription = null;
-        for (Recipe r : recipes) {
-            if (r.getId() == recipeNumber) {
-                if (stepNumber == INGREDIENCE)
-                    stepDescription = getDescriptionFromIngredience(recipes);
-                else
-                    stepDescription = r.getSteps().get(stepNumber - 1).getDescription();
+        if(recipes != null) {
+            for (Recipe r : recipes) {
+                if (r.getId() == recipeNumber) {
+                    if (stepNumber == INGREDIENCE)
+                        stepDescription = getDescriptionFromIngredience(recipes);
+                    else
+                        stepDescription = r.getSteps().get(stepNumber - 1).getDescription();
+                }
             }
         }
 
@@ -46,9 +51,19 @@ public class InstructionsFragment extends Fragment {
         return rootView;
     }
 
+    private int getRecipeIdx(int recipeNumber){
+        int idx = 0;
+        for(;idx<recipes.size();idx++){
+            if(recipes.get(idx).getId() == recipeNumber)
+                break;
+        }
+        return idx;
+    }
+
     private String getDescriptionFromIngredience(List<Recipe> recipes) {
         StringBuilder stringBuilder = new StringBuilder();
-        ArrayList<Ingredients> ingredients = recipes.get(recipeNumber).getIngredients();
+        Log.v(TAG, "recipeNumber " + recipeNumber + " from " + recipes.size());
+        ArrayList<Ingredients> ingredients = recipes.get(getRecipeIdx(recipeNumber)).getIngredients();
         for (Ingredients in : ingredients) {
             stringBuilder.append(in.getIngredient()).append(" ")
                     .append(in.getQuantity()).append(" ")

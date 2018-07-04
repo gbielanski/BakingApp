@@ -43,9 +43,11 @@ public class StepsFragment extends Fragment {
 
 
         ArrayList<Step> steps = new ArrayList<>();
-        for(Recipe r : mRecipes){
-            if(r.getId() == mRecipeNumber){
-                steps = r.getSteps();
+        if(mRecipes != null) {
+            for (Recipe r : mRecipes) {
+                if (r.getId() == mRecipeNumber) {
+                    steps = r.getSteps();
+                }
             }
         }
         StepsAdapter mStepsAdapter = new StepsAdapter(steps, (StepsAdapter.OnClickStepHandler) getActivity());

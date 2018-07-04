@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
                     data = new ArrayList<>(jsonResponse);
                     Thread t = new Thread() {
                         public void run() {
-                            RecipesDatabase database = RecipesDatabase.getInstance(MainActivity.this);
+                            RecipesDatabase database = RecipesDatabase.getInstance(getApplicationContext());
                             RecipeDao recipeDao = database.recipeDao();
                             Recipe[] recipes = data.toArray(new Recipe[data.size()]);
                             recipeDao.bulkInsert(recipes);

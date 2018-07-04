@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,9 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VideoFragment extends Fragment {
-    public static final String RECIPES_KEY = "RECIPES_KEY";
-    public static final String RECIPE_NUM_KEY = "RECIPE_NUM_KEY";
-    public static final String STEP_NUMBER_KEY = "STEP_NUMBER_KEY";
+    private static final String TAG = "VideoFragment";
     private SimpleExoPlayer mExoPlayer;
     private SimpleExoPlayerView mPlayerView;
     private List<Recipe> recipes;
@@ -61,12 +60,18 @@ public class VideoFragment extends Fragment {
             mPlayerView.setPlayer(mExoPlayer);
 
             String videoURL = null;
-            for (Recipe r : recipes) {
-                if (r.getId() == recipeNumber) {
-                    Step step = r.getSteps().get(stepNumber);
-                    videoURL = step.getVideoURL();
+
+            if(recipes != null && stepNumber > 0) {
+                for (Recipe r : recipes) {
+                    if (r.getId() == recipeNumber) {
+                        Step step = r.getSteps().get(stepNumber-1);
+                        videoURL = step.getVideoURL();
+                    }
                 }
             }
+
+            Log.v(TAG, "videoURL " + videoURL);
+            Log.v(TAG, "stepNumber " + stepNumber);
 
             if (videoURL != null) {
                 MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(videoURL),
@@ -107,9 +112,6 @@ public class VideoFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        //outState.putInt(RECIPE_NUM_KEY, recipeNumber);
-        //outState.putInt(STEP_NUMBER_KEY, stepNumber);
-        //outState.putParcelableArrayList(RECIPES_KEY, new ArrayList<Recipe>(recipes));
         super.onSaveInstanceState(outState);
     }
 }

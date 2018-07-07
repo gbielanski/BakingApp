@@ -30,13 +30,18 @@ import com.google.android.exoplayer2.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 public class VideoFragment extends Fragment {
     private static final String TAG = "VideoFragment";
     private SimpleExoPlayer mExoPlayer;
-    private SimpleExoPlayerView mPlayerView;
+    @BindView(R.id.player_view) SimpleExoPlayerView mPlayerView;
     private List<Recipe> recipes;
     private int recipeNumber;
     private int stepNumber;
+    private Unbinder unbinder;
 
     public VideoFragment() {
     }
@@ -46,7 +51,7 @@ public class VideoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_video, container, false);
-        mPlayerView = rootView.findViewById(R.id.player_view);
+        unbinder = ButterKnife.bind(this, rootView);
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.gotowanie));
         initializePlayer();
         return rootView;
@@ -113,5 +118,11 @@ public class VideoFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 }

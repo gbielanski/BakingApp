@@ -11,6 +11,9 @@ import com.bielanski.bakingapp.data.Step;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> {
     private List<Step> mSteps;
     private final StepsAdapter.OnClickStepHandler mClickHandler;
@@ -58,12 +61,14 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView description;
+        @BindView(R.id.description) TextView description;
+
 
         ViewHolder(View itemView) {
             super(itemView);
-            description = itemView.findViewById(R.id.description);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
+
         }
 
         @Override

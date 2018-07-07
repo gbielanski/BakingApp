@@ -1,17 +1,11 @@
 package com.bielanski.bakingapp.ui;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +17,17 @@ import com.bielanski.bakingapp.data.Step;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 public class StepsFragment extends Fragment {
     private static final String TAG = "StepsFragment";
     private List<Recipe> mRecipes;
     private int mRecipeNumber;
+    private Unbinder unbinder;
+    @BindView(R.id.steps_recycler_view) RecyclerView recyclerView;
 
     public StepsFragment() {
     }
@@ -35,8 +36,8 @@ public class StepsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_steps, container, false);
+        unbinder = ButterKnife.bind(this, rootView);
 
-        RecyclerView recyclerView = rootView.findViewById(R.id.steps_recycler_view);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -67,5 +68,11 @@ public class StepsFragment extends Fragment {
 
     public void setRecipeNumber(int recipeNumber) {
         this.mRecipeNumber = recipeNumber;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 }

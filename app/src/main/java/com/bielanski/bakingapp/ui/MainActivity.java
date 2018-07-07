@@ -20,6 +20,8 @@ import com.bielanski.bakingapp.network.RequestInterface;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
     public static final String TAG = "MainActivity";
     public static final int TABLET_SMALLEST_WIDGHT = 600;
     private ArrayList<Recipe> data;
-    private RecyclerView recyclerView;
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
     private RecipesAdapter adapter;
     public static final String RECIPE_ID = "RECIPE_ID";
 
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recyclerView = findViewById(R.id.recycler_view);
+        ButterKnife.bind(this);
         recyclerView.setHasFixedSize(true);
         Log.d(TAG, "Lifecycle onCreate ");
         Log.d(TAG, "MainActivity screenWidthDp " + getResources().getConfiguration().smallestScreenWidthDp);

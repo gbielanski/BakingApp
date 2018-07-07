@@ -20,21 +20,28 @@ import com.bielanski.bakingapp.data.Step;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 public class InstructionsFragment extends Fragment {
     private static final String TAG = "InstructionsFragment";
     private final int INGREDIENCE = 0;
     private List<Recipe> recipes;
     private int recipeNumber;
     private int stepNumber;
+    private Unbinder unbinder;
+    @BindView(R.id.instructions_text_view) TextView instructionsTextView;
 
     public InstructionsFragment() {
+
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_instructions, container, false);
-        TextView instructionsTextView = rootView.findViewById(R.id.instructions_text_view);
+        unbinder = ButterKnife.bind(this, rootView);
         String stepDescription = null;
         if(recipes != null) {
             for (Recipe r : recipes) {
@@ -82,5 +89,11 @@ public class InstructionsFragment extends Fragment {
 
     public void setStepNumber(int stepNumber) {
         this.stepNumber = stepNumber;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 }

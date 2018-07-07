@@ -22,6 +22,9 @@ import com.bielanski.bakingapp.data.database.RecipesDatabase;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static com.bielanski.bakingapp.ui.MainActivity.RECIPE_ID;
 import static com.bielanski.bakingapp.ui.MainActivity.TAG;
 import static com.bielanski.bakingapp.ui.StepsActivity.STEP_ID;
@@ -34,12 +37,15 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
     public static final int STEP_DETAILS_LOADER_ID = 234;
     private List<Recipe> mListOfRecipes;
     boolean mIsPhoneLandscapeMode = false;
+    @BindView(R.id.detail_next) Button buttonNext;
+    @BindView(R.id.detail_previous) Button buttonPrevious;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_step_details);
+        ButterKnife.bind(this);
         Intent intent = getIntent();
         if (intent != null) {
             mRecipeId = intent.getIntExtra(RECIPE_ID, 0);
@@ -85,18 +91,17 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
         if(mIsPhoneLandscapeMode)
             return;
 
-        Button buttonNext = findViewById(R.id.detail_next);
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //TODO Manage this
+
                 mStepId++;
                 replaceFragments();
 
             }
         });
 
-        Button buttonPrevious = findViewById(R.id.detail_previous);
         buttonPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

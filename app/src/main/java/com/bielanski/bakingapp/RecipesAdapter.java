@@ -11,6 +11,9 @@ import com.bielanski.bakingapp.data.Recipe;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHolder> {
 
@@ -52,14 +55,13 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private TextView name;
-        private TextView serving;
+
+        @BindView(R.id.name) TextView name;
+        @BindView(R.id.serving) TextView serving;
 
         ViewHolder(View itemView) {
             super(itemView);
-
-            name = itemView.findViewById(R.id.name);
-            serving = itemView.findViewById(R.id.serving);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 

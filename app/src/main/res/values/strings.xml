@@ -6,4 +6,5 @@
     <string name="previous">Previous</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="empty_recipes_list">No Recipe Steps Available</string>
 </resources>

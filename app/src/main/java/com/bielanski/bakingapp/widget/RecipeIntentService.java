@@ -8,12 +8,15 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.bielanski.bakingapp.R;
+import com.bielanski.bakingapp.data.Ingredients;
+import com.bielanski.bakingapp.data.PrefUtils;
 import com.bielanski.bakingapp.data.Recipe;
-import com.bielanski.bakingapp.data.Step;
 import com.bielanski.bakingapp.data.database.RecipesDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.bielanski.bakingapp.data.PrefUtils.RECIPE_ID_NOT_SET;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -30,8 +33,9 @@ public class RecipeIntentService extends RemoteViewsService {
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        return new RemoteViewsFactory(){
-            ArrayList<Step> mSteps;
+        return new RemoteViewsFactory() {
+            ArrayList<Ingredients> mIngredients = null;
+
             @Override
             public void onCreate() {
                 // Nothing to do
@@ -43,11 +47,11 @@ public class RecipeIntentService extends RemoteViewsService {
                 final long identityToken = Binder.clearCallingIdentity();
 
                 List<Recipe> allRecipes = RecipesDatabase.getInstance(RecipeIntentService.this).recipeDao().getAllRecipes();
-                Recipe recipe = allRecipes.get(0);
-                mSteps = recipe.getSteps();
-
-                for(Step s : mSteps)
-                    Log.v(TAG, "Step : " + s.getShortDescription());
+                final int recipeId = PrefUtils.getRecipe(getApplicationContext());
+                if(recipeId  != RECIPE_ID_NOT_SET) {
+                    Recipe recipe = allRecipes.get(recipeId-1);
+                    mIngredients = recipe.getIngredients();
+                }
 
                 Binder.restoreCallingIdentity(identityToken);
 
@@ -57,12 +61,12 @@ public class RecipeIntentService extends RemoteViewsService {
             public void onDestroy() {
                 Log.v(TAG, "onDestroy");
 
-                mSteps = null;
+                mIngredients = null;
             }
 
             @Override
             public int getCount() {
-                int count = mSteps == null ? 0 : mSteps.size();
+                int count = mIngredients == null ? 0 : mIngredients.size();
                 Log.v(TAG, "getCount " + count);
 
                 return count;
@@ -72,14 +76,15 @@ public class RecipeIntentService extends RemoteViewsService {
             public RemoteViews getViewAt(int position) {
                 Log.v(TAG, "getViewAt");
 
-                if(mSteps == null || position >=  mSteps.size())
+                if (mIngredients == null || position >= mIngredients.size())
                     return null;
 
-                RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_step_list_item);
-                String shortDescription = mSteps.get(position).getShortDescription();
+                RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_ingredients_list_item);
+                String shortDescription = mIngredients.get(position).getIngredient() + " "
+                        + mIngredients.get(position).getQuantity() + " " + mIngredients.get(position).getMeasure();
                 Log.v(TAG, "getViewAt " + shortDescription);
-                views.setTextViewText(R.id.step, shortDescription);
-                Log.v(TAG, "RemoteViews getViewAt position " + position + " step" + shortDescription);
+                views.setTextViewText(R.id.ingredient, shortDescription);
+                Log.v(TAG, "RemoteViews getViewAt position " + position + " " + shortDescription);
 
                 return views;
             }
@@ -88,7 +93,7 @@ public class RecipeIntentService extends RemoteViewsService {
             public RemoteViews getLoadingView() {
                 Log.v(TAG, "getLoadingView");
 
-                return new RemoteViews(getPackageName(), R.layout.widget_step_list_item);
+                return new RemoteViews(getPackageName(), R.layout.widget_ingredients_list_item);
             }
 
             @Override
@@ -112,42 +117,4 @@ public class RecipeIntentService extends RemoteViewsService {
             }
         };
     }
-
-    //private static final String EXTRA_PARAM1 = "com.bielanski.bakingapp.extra.PARAM1";
-    //private static final String EXTRA_PARAM2 = "com.bielanski.bakingapp.extra.PARAM2";
-
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-//    public static void startActionFetchRecipes(Context context, String param1, String param2) {
-//        Intent intent = new Intent(context, RecipeIntentService.class);
-//        intent.setAction(ACTION_FETCH_RECIPES);
-//        //intent.putExtra(EXTRA_PARAM1, param1);
-//        //intent.putExtra(EXTRA_PARAM2, param2);
-//        context.startService(intent);
-//    }
-
-
-//    @Override
-//    protected void onHandleIntent(Intent intent) {
-//        if (intent != null) {
-//            final String action = intent.getAction();
-//            if (ACTION_FETCH_RECIPES.equals(action)) {
-// //               final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-// //               final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-//                handleActionFetchRecipes();
-//            }
-//        }
-//    }
-
-//    private void handleActionFetchRecipes() {
-//        List<Recipe> allRecipes = RecipesDatabase.getInstance(this).recipeDao().getAllRecipes();
-//
-//        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-//        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidgetProvider.class));
-//        //Now update all widgets
-//    }
 }

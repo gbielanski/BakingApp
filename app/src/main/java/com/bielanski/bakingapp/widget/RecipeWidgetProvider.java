@@ -25,18 +25,20 @@ import static com.bielanski.bakingapp.widget.RecipeIntentService.ACTION_FETCH_RE
 public class RecipeWidgetProvider extends AppWidgetProvider {
     private static final String TAG = "RecipeWidgetProvider";
 
+    public static final String ACTION_DATA_UPDATED = "com.bielanski.bakingapp.ACTION_DATA_UPDATED";
+
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         super.onReceive(context, intent);
         Log.v(TAG, "onReceive");
 
 
-        //       if (QuoteSyncJob.ACTION_DATA_UPDATED.equals(intent.getAction())) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
-                new ComponentName(context, getClass()));
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
-        //  }
+        if (ACTION_DATA_UPDATED.equals(intent.getAction())) {
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
+                    new ComponentName(context, getClass()));
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
+        }
     }
 
     @Override

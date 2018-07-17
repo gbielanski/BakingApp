@@ -38,8 +38,6 @@
         android:onClick="onClickPrevButton"
         android:text="@string/previous"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonNext"
-        app:layout_constraintHorizontal_bias="0.085"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/steps_container" />
 
@@ -74,4 +72,16 @@
             android:layout_marginStart="8dp"
             android:layout_weight="1" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonWidget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/widget"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonNext"
+        app:layout_constraintStart_toEndOf="@+id/buttonPrevious" />
 </android.support.constraint.ConstraintLayout>

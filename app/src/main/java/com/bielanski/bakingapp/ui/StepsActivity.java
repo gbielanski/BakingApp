@@ -16,9 +16,11 @@ import android.widget.Button;
 import com.bielanski.bakingapp.R;
 import com.bielanski.bakingapp.RecipeAsyncTaskLoader;
 import com.bielanski.bakingapp.StepsAdapter;
+import com.bielanski.bakingapp.data.PrefUtils;
 import com.bielanski.bakingapp.data.Recipe;
 import com.bielanski.bakingapp.data.Step;
 import com.bielanski.bakingapp.data.database.RecipesDatabase;
+import com.bielanski.bakingapp.widget.RecipeWidgetProvider;
 
 
 import java.util.ArrayList;
@@ -119,6 +121,12 @@ public class StepsActivity extends AppCompatActivity implements StepsAdapter.OnC
                     .replace(R.id.instructions_container, instructionsFragment)
                     .commit();
         }
+    }
+
+    public void onClickWidget(View view) {
+        PrefUtils.addRecipe(this, mRecipeId);
+        Intent dataUpdatedIntent = new Intent(RecipeWidgetProvider.ACTION_DATA_UPDATED);
+        sendBroadcast(dataUpdatedIntent);
     }
 
     @NonNull

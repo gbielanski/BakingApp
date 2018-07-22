@@ -2,6 +2,10 @@ package com.bielanski.bakingapp.ui;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,8 +17,8 @@ import android.widget.ProgressBar;
 
 import com.bielanski.bakingapp.R;
 import com.bielanski.bakingapp.RecipesAdapter;
+import com.bielanski.bakingapp.SimpleIdlingResource;
 import com.bielanski.bakingapp.data.Recipe;
-import com.bielanski.bakingapp.data.Step;
 import com.bielanski.bakingapp.data.database.RecipeDao;
 import com.bielanski.bakingapp.data.database.RecipesDatabase;
 import com.bielanski.bakingapp.network.RequestInterface;
@@ -32,6 +36,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements RecipesAdapter.OnClickRecipeHandler {
     public static final String TAG = "MainActivity";
+
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+
     public static final int TABLET_SMALLEST_WIDGHT = 600;
     private ArrayList<Recipe> data;
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
@@ -88,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
                     data = new ArrayList<>(jsonResponse);
                     Thread t = new Thread() {
                         public void run() {
+                            mIdlingResource.setIdleState(true);
                             RecipesDatabase database = RecipesDatabase.getInstance(getApplicationContext());
                             RecipeDao recipeDao = database.recipeDao();
                             Recipe[] recipes = data.toArray(new Recipe[data.size()]);
@@ -99,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
                     adapter.addRecipeData(data);
                     progressBar.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
+                    mIdlingResource.setIdleState(false);
                 }
             }
 
@@ -117,5 +127,14 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
         Intent intent = new Intent(this, StepsActivity.class);
         intent.putExtra(RECIPE_ID, id);
         startActivity(intent);
+    }
+
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
     }
 }

@@ -3,6 +3,7 @@ package com.bielanski.bakingapp.ui;
 import android.content.Intent;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,9 @@ import butterknife.Unbinder;
 
 public class InstructionsFragment extends Fragment {
     private static final String TAG = "InstructionsFragment";
+    public static final String RECIPE_LIST = "RECIPE_LIST";
+    public static final String STEP_NUMBER = "STEP_NUMBER";
+    public static final String RECIPE_NUMBER = "RECIPE_NUMBER";
     private final int INGREDIENCE = 0;
     private List<Recipe> recipes;
     private int recipeNumber;
@@ -42,6 +46,13 @@ public class InstructionsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_instructions, container, false);
         unbinder = ButterKnife.bind(this, rootView);
+
+        if(savedInstanceState != null){
+            recipes = savedInstanceState.getParcelableArrayList(RECIPE_LIST);
+            recipeNumber = savedInstanceState.getInt(RECIPE_NUMBER);
+            stepNumber = savedInstanceState.getInt(STEP_NUMBER);
+        }
+
         String stepDescription = null;
         if(recipes != null) {
             for (Recipe r : recipes) {
@@ -95,5 +106,13 @@ public class InstructionsFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList(RECIPE_LIST, new ArrayList<>(recipes));
+        outState.putInt(STEP_NUMBER, stepNumber);
+        outState.putInt(RECIPE_NUMBER, recipeNumber);
+        super.onSaveInstanceState(outState);
     }
 }

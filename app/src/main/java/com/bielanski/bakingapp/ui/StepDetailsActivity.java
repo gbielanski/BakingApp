@@ -1,6 +1,7 @@
 package com.bielanski.bakingapp.ui;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +18,7 @@ import com.bielanski.bakingapp.RecipeAsyncTaskLoader;
 import com.bielanski.bakingapp.data.Recipe;
 import com.bielanski.bakingapp.data.database.RecipesDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -30,6 +32,7 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
 
     public static final String RECIPE_ID_KEY = "RECIPE_ID_KEY";
     public static final String STEP_ID_KEY = "STEP_ID_KEY";
+    public static final String RECIPE_LIST = "RECIPE_LIST";
     private int mRecipeId;
     private int mStepId;
     public static final int STEP_DETAILS_LOADER_ID = 234;
@@ -56,8 +59,12 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
         if (savedInstanceState != null) {
             mRecipeId = savedInstanceState.getInt(RECIPE_ID_KEY);
             mStepId = savedInstanceState.getInt(STEP_ID_KEY);
+            mListOfRecipes = savedInstanceState.getParcelableArrayList(RECIPE_LIST);
 
         }
+
+        setUpButtons();
+
         if (savedInstanceState == null)
             getSupportLoaderManager().initLoader(STEP_DETAILS_LOADER_ID, null, this);
 
@@ -80,7 +87,7 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
     public void onLoadFinished(@NonNull Loader<List<Recipe>> loader, List<Recipe> listOfRecipes) {
         mListOfRecipes = listOfRecipes;
         replaceFragments();
-        setUpButtons();
+
 
     }
 
@@ -146,6 +153,7 @@ public class StepDetailsActivity extends AppCompatActivity implements LoaderMana
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(RECIPE_ID_KEY, mRecipeId);
         outState.putInt(STEP_ID_KEY, mStepId);
+        outState.putParcelableArrayList(RECIPE_LIST, new ArrayList<>(mListOfRecipes));
         super.onSaveInstanceState(outState);
     }
 }

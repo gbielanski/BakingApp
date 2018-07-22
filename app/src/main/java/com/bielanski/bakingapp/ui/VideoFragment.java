@@ -165,12 +165,14 @@ public class VideoFragment extends Fragment {
         mCurrentPosition = mExoPlayer.getCurrentPosition();
         mPlayVideoWhenForegrounded = mExoPlayer.getPlayWhenReady();
         mExoPlayer.setPlayWhenReady(false);
+        releasePlayer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         Log.v(TAG, "onStop");
+        releasePlayer();
     }
 
     @Override

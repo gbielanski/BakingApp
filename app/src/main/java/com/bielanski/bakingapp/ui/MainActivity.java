@@ -8,6 +8,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.bielanski.bakingapp.R;
 import com.bielanski.bakingapp.RecipesAdapter;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
     public static final int TABLET_SMALLEST_WIDGHT = 600;
     private ArrayList<Recipe> data;
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.progress_bar)ProgressBar progressBar;
     private RecipesAdapter adapter;
     public static final String RECIPE_ID = "RECIPE_ID";
 
@@ -73,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
         RequestInterface request = retrofit.create(RequestInterface.class);
         Call<List<Recipe>> call = request.getJSON();
 
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+
         call.enqueue(new Callback<List<Recipe>>() {
             @Override
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
@@ -91,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
 
                     t.start();
                     adapter.addRecipeData(data);
-
+                    progressBar.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
                 }
             }
 

@@ -36,12 +36,22 @@ import butterknife.Unbinder;
 
 public class VideoFragment extends Fragment {
     private static final String TAG = "VideoFragment";
+
+    public static final String POSSITION = "POSSITION";
+    public static final String PLAYSTATE = "PLAYSTATE";
+    public static final String STEP = "STEP";
+    public static final String RECIPE = "RECIPE";
+    public static final String VIDEOURL = "VIDEOURL";
     private SimpleExoPlayer mExoPlayer;
-    @BindView(R.id.player_view) SimpleExoPlayerView mPlayerView;
-    private List<Recipe> recipes;
-    private int recipeNumber;
-    private int stepNumber;
+    @BindView(R.id.player_view)
+    SimpleExoPlayerView mPlayerView;
+    private List<Recipe> mRecipes;
+    private int mRecipeNumber;
+    private int mStepNumber;
     private Unbinder unbinder;
+    private long mCurrentPosition;
+    private boolean mPlayVideoWhenForegrounded;
+    private String videoURL;
 
     public VideoFragment() {
     }
@@ -53,7 +63,18 @@ public class VideoFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_video, container, false);
         unbinder = ButterKnife.bind(this, rootView);
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.gotowanie));
-        initializePlayer();
+
+        if (savedInstanceState != null) {
+            mCurrentPosition = savedInstanceState.getLong(POSSITION, 0);
+            mPlayVideoWhenForegrounded = savedInstanceState.getBoolean(PLAYSTATE, false);
+            mStepNumber = savedInstanceState.getInt(STEP, 0);
+            mRecipeNumber = savedInstanceState.getInt(RECIPE, 0);
+            videoURL = savedInstanceState.getString(VIDEOURL, null);
+            Log.v(TAG, "onCreateView " + POSSITION + " " + mCurrentPosition);
+            Log.v(TAG, "onCreateView " + PLAYSTATE + " " + mPlayVideoWhenForegrounded);
+            Log.v(TAG, "onCreateView " + STEP + " " + mStepNumber);
+            Log.v(TAG, "onCreateView " + RECIPE + " " + mRecipeNumber);
+        }
         return rootView;
     }
 
@@ -64,19 +85,19 @@ public class VideoFragment extends Fragment {
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector, loadControl);
             mPlayerView.setPlayer(mExoPlayer);
 
-            String videoURL = null;
+            //videoURL = null;
 
-            if(recipes != null && stepNumber > 0) {
-                for (Recipe r : recipes) {
-                    if (r.getId() == recipeNumber) {
-                        Step step = r.getSteps().get(stepNumber-1);
+            if (mRecipes != null && mStepNumber > 0) {
+                for (Recipe r : mRecipes) {
+                    if (r.getId() == mRecipeNumber) {
+                        Step step = r.getSteps().get(mStepNumber - 1);
                         videoURL = step.getVideoURL();
                     }
                 }
             }
 
-            Log.v(TAG, "videoURL " + videoURL);
-            Log.v(TAG, "stepNumber " + stepNumber);
+            Log.v(TAG, "onCreateView videoURL " + videoURL);
+            Log.v(TAG, "onCreateView stepNumber " + mStepNumber);
 
             if (videoURL != null) {
                 MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(videoURL),
@@ -86,43 +107,79 @@ public class VideoFragment extends Fragment {
                         null);
 
                 mExoPlayer.prepare(mediaSource);
-                mExoPlayer.setPlayWhenReady(true);
             }
         }
     }
 
     private void releasePlayer() {
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
+        if (mExoPlayer != null) {
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
     }
 
     @Override
     public void onDestroyView() {
+        Log.v(TAG, "onDestroyView");
+
         releasePlayer();
+        unbinder.unbind();
         super.onDestroyView();
     }
 
     public void setRecipes(List<Recipe> recipes) {
-        this.recipes = recipes;
+        Log.v(TAG, "setRecipes");
+        this.mRecipes = recipes;
     }
 
     public void setRecipeNumber(int recipeNumber) {
-        this.recipeNumber = recipeNumber;
+        Log.v(TAG, "setRecipeNumber");
+
+        this.mRecipeNumber= recipeNumber;
     }
 
     public void setStepNumber(int stepNumber) {
-        this.stepNumber = stepNumber;
+        this.mStepNumber = stepNumber;
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
+    public void onSaveInstanceState(Bundle outState) {
+        Log.v(TAG, "onSaveInstanceState " + POSSITION + " " + mCurrentPosition);
+        Log.v(TAG, "onSaveInstanceState " + PLAYSTATE + " " + mPlayVideoWhenForegrounded);
+        Log.v(TAG, "onSaveInstanceState " + STEP + " " + mStepNumber);
+        Log.v(TAG, "onSaveInstanceState " + RECIPE + " " + mRecipeNumber);
+        outState.putLong(POSSITION, mCurrentPosition);
+        outState.putBoolean(PLAYSTATE, mPlayVideoWhenForegrounded);
+        outState.putInt(STEP, mStepNumber);
+        outState.putInt(RECIPE, mRecipeNumber);
+        outState.putString(VIDEOURL, videoURL);
+        //super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unbinder.unbind();
+    public void onPause() {
+
+        super.onPause();
+        Log.v(TAG, "onPause");
+        mCurrentPosition = mExoPlayer.getCurrentPosition();
+        mPlayVideoWhenForegrounded = mExoPlayer.getPlayWhenReady();
+        mExoPlayer.setPlayWhenReady(false);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.v(TAG, "onStop");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        initializePlayer();
+        mExoPlayer.seekTo(mCurrentPosition);
+        mExoPlayer.setPlayWhenReady(mPlayVideoWhenForegrounded);
+        Log.v(TAG, "onStart " + POSSITION + " " + mCurrentPosition);
+        Log.v(TAG, "onStart " + PLAYSTATE + " " + mPlayVideoWhenForegrounded);
     }
 }

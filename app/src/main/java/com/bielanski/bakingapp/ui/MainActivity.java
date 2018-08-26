@@ -42,8 +42,10 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
 
     public static final int TABLET_SMALLEST_WIDGHT = 600;
     private ArrayList<Recipe> data;
-    @BindView(R.id.recycler_view) RecyclerView recyclerView;
-    @BindView(R.id.progress_bar)ProgressBar progressBar;
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
     private RecipesAdapter adapter;
     public static final String RECIPE_ID = "RECIPE_ID";
 
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
                 getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 3);
             recyclerView.setLayoutManager(layoutManager);
-        }else{
+        } else {
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(layoutManager);
 
@@ -96,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.On
                     data = new ArrayList<>(jsonResponse);
                     Thread t = new Thread() {
                         public void run() {
-                            mIdlingResource.setIdleState(true);
+                            if (mIdlingResource != null)
+                                mIdlingResource.setIdleState(true);
                             RecipesDatabase database = RecipesDatabase.getInstance(getApplicationContext());
                             RecipeDao recipeDao = database.recipeDao();
                             Recipe[] recipes = data.toArray(new Recipe[data.size()]);
